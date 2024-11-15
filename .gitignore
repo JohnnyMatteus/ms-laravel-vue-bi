@@ -1,22 +1,67 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
+# Diretórios de sistema e IDEs
+.idea/
+.vscode/
+node_modules/
+vendor/
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de log e relatórios
+*.log
+*.log.*
+*.tlog
+*.ts
+*.tlog.*
+
+# Arquivos temporários
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+
+# Cache do Composer
+composer.phar
+
+# Cache do Laravel
+bootstrap/cache/*.php
+public/hot
+public/storage
+storage/*.key
+storage/*.log
+storage/debugbar/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/framework/cache/*
+
+# Uploads e arquivos temporários
+storage/app/public/*
+!storage/app/public/.gitignore
+storage/logs/*
 .env
-.env.backup
-.env.production
-.phpactor.json
+.env.*.backup
+.env.local
+.env.dev
+.env.test
+.env.prod
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
-/.vscode
-/.zed
+
+# Configuração do npm/yarn
+npm-debug.log*
+yarn-error.log*
+yarn.lock
+package-lock.json
+
+# Arquivos de build do Vite
+public/build
+public/mix-manifest.json
+
+# Chaves de segurança
+homestead.json
+homestead.yaml
+*.key
+*.crt
