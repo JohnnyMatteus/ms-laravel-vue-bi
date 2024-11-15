@@ -31,6 +31,7 @@ public/hot
 public/storage
 storage/*.key
 storage/*.log
+storage/logs/*
 storage/debugbar/*
 storage/framework/cache/data/*
 storage/framework/sessions/*
@@ -65,3 +66,4 @@ homestead.json
 homestead.yaml
 *.key
 *.crt
+/composer.lock
