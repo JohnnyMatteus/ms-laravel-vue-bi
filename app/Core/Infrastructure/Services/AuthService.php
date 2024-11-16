@@ -8,6 +8,8 @@ class AuthService
 {
     public function generateToken(User $user): string
     {
-        return $user->createToken('API Token')->plainTextToken;
+        $tokenResult = $user->createToken('API Token');
+
+        return $tokenResult->accessToken;
     }
 }

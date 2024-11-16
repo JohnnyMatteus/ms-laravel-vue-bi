@@ -3,24 +3,21 @@
 namespace App\Core\Infrastructure\Repositories;
 
 use App\Core\Domain\Repositories\UserRepositoryInterface;
-use App\Core\Domain\Entities\User;
+use App\Core\Domain\Entities\User as DomainUser;
 use App\Models\User as EloquentUser;
-use Illuminate\Support\Facades\Hash;
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function create(User $user): User
+    public function create(DomainUser $user): EloquentUser
     {
-        $eloquentUser = EloquentUser::create([
-            'name' => $user->name,
-            'email' => $user->email,
-            'password' => Hash::make($user->password)
+        return EloquentUser::create([
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'password' => $user->getPassword(),
         ]);
-
-        return new User($eloquentUser->name, $eloquentUser->email, $eloquentUser->password);
     }
 
-    public function findByEmail(string $email): ?User
+    public function findByEmail(string $email): ?DomainUser
     {
         $eloquentUser = EloquentUser::where('email', $email)->first();
 
@@ -28,6 +25,10 @@ class UserRepository implements UserRepositoryInterface
             return null;
         }
 
-        return new User($eloquentUser->name, $eloquentUser->email, $eloquentUser->password);
+        return new DomainUser(
+            name: $eloquentUser->name,
+            email: $eloquentUser->email,
+            password: $eloquentUser->password
+        );
     }
 }

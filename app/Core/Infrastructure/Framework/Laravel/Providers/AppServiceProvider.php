@@ -3,6 +3,7 @@
 namespace App\Core\Infrastructure\Framework\Laravel\Providers;
 
 use App\Core\Domain\Repositories\UserRepositoryInterface;
+use App\Core\Domain\UseCases\Auth\RegisterUseCase;
 use App\Core\Infrastructure\Framework\Laravel\LaravelMiddleware\BlockNonApiAccess;
 use App\Core\Infrastructure\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;

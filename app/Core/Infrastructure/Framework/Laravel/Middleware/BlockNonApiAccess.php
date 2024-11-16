@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Infrastructure\Framework\Laravel\LaravelMiddleware;
+namespace App\Core\Infrastructure\Framework\Laravel\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

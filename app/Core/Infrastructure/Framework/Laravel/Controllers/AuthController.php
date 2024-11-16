@@ -12,10 +12,13 @@ use Illuminate\Http\JsonResponse;
 
 class AuthController
 {
+    private RegisterUseCase $registerUseCase;
     public function __construct(
         RegisterUseCase $registerUseCase,
         LoginUseCase $loginUseCase
-    ) {}
+    ) {
+        $this->registerUseCase = $registerUseCase;
+    }
 
     public function register(RegisterRequest $request): JsonResponse
     {
