@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'password' => bcrypt('password'), // Certifique-se de que a senha está consistente
+            ]);
+        }
+
         $this->call([
             PassportSeeder::class,
             InvestmentTypesSeeder::class,
@@ -22,11 +30,6 @@ class DatabaseSeeder extends Seeder
             SectorReturnsSeeder::class,
             RegionGrowthSeeder::class,
 
-        ]);
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
         ]);
     }
 }

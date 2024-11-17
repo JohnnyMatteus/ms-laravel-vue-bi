@@ -18,7 +18,10 @@ class ActionReturnRepository implements ActionReturnRepositoryInterface
 
     public function getDetailedData(array $filters): mixed
     {
-        return $this->applyFilters(ActionReturn::query(), $filters)->get();
+        return $this->applyFilters(ActionReturn::query(), $filters)
+            ->select('action_code', DB::raw('AVG(return_percentage) as average_return'))
+            ->groupBy('action_code')
+            ->get()->toArray();
     }
 
     public function filterByInvestmentType(int $investmentTypeId): mixed
