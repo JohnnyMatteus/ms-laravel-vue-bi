@@ -13,7 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(PassportSeeder::class);
+        $this->call([
+            PassportSeeder::class,
+            InvestmentTypesSeeder::class,
+            ActionReturnsSeeder::class,
+            PatrimonyEvolutionSeeder::class,
+            AssetDistributionSeeder::class,
+            SectorReturnsSeeder::class,
+            RegionGrowthSeeder::class,
+
+        ]);
 
         User::factory()->create([
             'name' => 'Test User',
