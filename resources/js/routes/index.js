@@ -43,7 +43,7 @@ const router = createRouter({
 
 // Global Navigation Guard
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem("token"); // Obtém o token do localStorage
+    const token = localStorage.getItem("authToken"); // Obtém o token do localStorage
     const requiresAuth = to.meta.requiresAuth;
 
     if (requiresAuth && !token) {

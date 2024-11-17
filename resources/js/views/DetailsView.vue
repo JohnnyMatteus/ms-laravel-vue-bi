@@ -50,6 +50,7 @@ export default {
     setup() {
         const route = useRoute();
         const charts = [
+            // Inclui os mesmos gráficos do dashboard
             {
                 id: 1,
                 title: "Retorno por Ação",
@@ -75,6 +76,24 @@ export default {
                 data: {
                     labels: ["Ações", "FIIs", "Bancos"],
                     datasets: [{ label: "Distribuição", data: [60, 30, 10], backgroundColor: ["red", "blue", "yellow"] }],
+                },
+            },
+            {
+                id: 4,
+                title: "Rentabilidade por Setor",
+                type: "bar",
+                data: {
+                    labels: ["Tecnologia", "Saúde", "Energia", "Financeiro"],
+                    datasets: [{ label: "Rentabilidade (%)", data: [12, 18, 25, 30], backgroundColor: "purple" }],
+                },
+            },
+            {
+                id: 5,
+                title: "Crescimento por Região",
+                type: "line",
+                data: {
+                    labels: ["Norte", "Sul", "Leste", "Oeste"],
+                    datasets: [{ label: "Crescimento", data: [5, 15, 20, 10], borderColor: "orange" }],
                 },
             },
         ];

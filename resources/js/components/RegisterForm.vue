@@ -114,7 +114,7 @@ export default {
                 }
 
                 const data = await response.json();
-                localStorage.setItem("token", data.token); // Armazena o token no localStorage
+                localStorage.setItem("authToken", data.token); // Armazena o token no localStorage
                 successMessage.value = "Registration successful! Redirecting to login...";
                 setTimeout(() => {
                     router.push("/login"); // Redireciona para login após sucesso

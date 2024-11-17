@@ -9,10 +9,12 @@
             <label class="block text-gray-700 mb-2">Password</label>
             <input v-model="password" type="password" class="w-full p-2 border rounded" required />
         </div>
+        <div v-if="loading" class="text-blue-500 mb-4">Logging in...</div>
         <div v-if="error" class="text-red-500 mb-4">{{ error }}</div>
-        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded">Login</button>
+        <button type="submit" :disabled="loading" class="w-full bg-blue-500 text-white py-2 rounded">
+            Login
+        </button>
 
-        <!-- Adicione o link para a página de registro -->
         <p class="mt-4 text-center">
             Don't have an account?
             <router-link to="/register" class="text-blue-500 hover:underline">
@@ -25,26 +27,44 @@
 <script>
 import { ref } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
     setup() {
         const authStore = useAuthStore();
+        const router = useRouter();
 
         const email = ref("");
         const password = ref("");
-        const error = ref(""); // Declare `error` como uma referência reativa
+        const error = ref("");
+        const loading = ref(false);
 
         const login = async () => {
+            loading.value = true;
+            error.value = "";
+
             try {
-                await authStore.login({ email: email.value, password: password.value });
-                console.log("User logged in:", authStore.user);
+                const response = await axios.post("/api/login", {
+                    email: email.value,
+                    password: password.value,
+                });
+
+                const token = response.data.token;
+
+                // Atualizar o auth store com o token
+                authStore.login(token);
+
+                // Redirecionar para o dashboard após login bem-sucedido
+                await router.push("/dashboard");
             } catch (err) {
-                error.value = "Login failed. Please check your credentials."; // Atualiza o erro
+                error.value = err.response?.data?.message || "Login failed. Please try again.";
+            } finally {
+                loading.value = false;
             }
         };
 
-        return { email, password, error, login }; // Certifique-se de retornar `error`
+        return { email, password, error, loading, login };
     },
 };
 </script>
-

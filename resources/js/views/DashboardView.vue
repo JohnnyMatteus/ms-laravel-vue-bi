@@ -2,7 +2,7 @@
     <AuthenticatedLayout>
         <div class="container mx-auto p-4">
             <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div
                     v-for="chart in charts"
                     :key="chart.id"
@@ -36,7 +36,7 @@ export default {
                 type: "bar",
                 data: {
                     labels: ["PETR4", "VALE3", "ITUB4", "BBAS3"],
-                    datasets: [{ label: "Retorno (%)", data: [10, 20, 15, 25], backgroundColor: "blue" }],
+                    datasets: [{ label: "Retorno (%)", data: [10, 20, 15, 25], backgroundColor: "blue"}],
                 },
             },
             {
@@ -45,7 +45,7 @@ export default {
                 type: "line",
                 data: {
                     labels: ["Jan", "Feb", "Mar", "Apr"],
-                    datasets: [{ label: "Evolução", data: [100, 200, 300, 400], borderColor: "green" }],
+                    datasets: [{label: "Evolução", data: [100, 200, 300, 400], borderColor: "green"}],
                 },
             },
             {
@@ -54,12 +54,30 @@ export default {
                 type: "pie",
                 data: {
                     labels: ["Ações", "FIIs", "Bancos"],
-                    datasets: [{ label: "Distribuição", data: [60, 30, 10], backgroundColor: ["red", "blue", "yellow"] }],
+                    datasets: [{label: "Distribuição", data: [60, 30, 10], backgroundColor: ["red", "blue", "yellow"]}],
+                },
+            },
+            {
+                id: 4,
+                title: "Rentabilidade por Setor",
+                type: "bar",
+                data: {
+                    labels: ["Tecnologia", "Saúde", "Energia", "Financeiro"],
+                    datasets: [{label: "Rentabilidade (%)", data: [12, 18, 25, 30], backgroundColor: "purple"}],
+                },
+            },
+            {
+                id: 5,
+                title: "Crescimento por Região",
+                type: "line",
+                data: {
+                    labels: ["Norte", "Sul", "Leste", "Oeste"],
+                    datasets: [{label: "Crescimento", data: [5, 15, 20, 10], borderColor: "orange"}],
                 },
             },
         ];
 
-        return { charts };
+        return {charts};
     },
 };
 </script>

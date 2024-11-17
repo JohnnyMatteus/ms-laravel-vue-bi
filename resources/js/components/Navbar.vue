@@ -9,7 +9,7 @@
 export default {
     methods: {
         logout() {
-            localStorage.removeItem("token");
+            localStorage.removeItem("authToken");
             this.$router.push("/login");
         },
     },
