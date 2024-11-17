@@ -2,27 +2,31 @@
 
 namespace App\Core\Domain\UseCases\Auth;
 
+use App\Core\Domain\Exceptions\AuthException;
+use App\Core\Domain\Exceptions\BusinessRuleException;
+use App\Core\Domain\Services\AuthServiceInterface;
 use App\Core\Domain\Repositories\UserRepositoryInterface;
 use App\Core\DTOs\Auth\LoginRequestDTO;
-use Illuminate\Support\Facades\Auth;
 
 class LoginUseCase
 {
+    private AuthServiceInterface $authService;
     private UserRepositoryInterface $userRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(AuthServiceInterface $authService, UserRepositoryInterface $userRepository)
     {
+        $this->authService = $authService;
         $this->userRepository = $userRepository;
     }
 
     public function execute(LoginRequestDTO $dto): string
     {
-        if (!Auth::attempt(['email' => $dto->email, 'password' => $dto->password])) {
-            throw new \Exception('Invalid credentials');
+        $user = $this->userRepository->findByEmail($dto->email);
+
+        if (!$user || !$this->authService->checkPassword($user, $dto->password)) {
+            throw new BusinessRuleException('Invalid credentials');
         }
 
-        $user = Auth::user();
-
-        return $user->createToken('Personal Access Token')->accessToken;
+        return $this->authService->generateToken($user);
     }
 }

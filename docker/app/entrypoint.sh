@@ -40,23 +40,34 @@ EOL
     fi
 fi
 
-# Atualizar variáveis no .env
-sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
-sed -i 's/DB_HOST=.*/DB_HOST=db/' .env
-sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel/' .env
-sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
-sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
+# Adicionar configuração do banco de testes no .env.testing
+if [ ! -f .env.testing ]; then
+    cp .env .env.testing
+    sed -i 's/DB_DATABASE=laravel/DB_DATABASE=laravel_testing/' .env.testing
+    sed -i 's/DB_CONNECTION=mysql/DB_CONNECTION=mysql_testing/' .env.testing
+fi
 
 echo "Configuração do .env concluída."
 
-# Verificar se o banco de dados está pronto
-echo "Aguardando conexão com o banco de dados..."
+# Verificar conexão com o banco principal
+echo "Aguardando conexão com o banco principal..."
 until php -r "new PDO('mysql:host=db;port=3306;dbname=laravel', 'laravel', 'secret');" 2>/dev/null; do
-    echo "Aguardando o banco de dados ficar pronto..."
+    echo "Aguardando o banco principal ficar pronto..."
     sleep 3
 done
 
-echo "Banco de dados conectado com sucesso."
+# Criar o banco de testes
+echo "Criando banco de dados de testes, se necessário..."
+docker exec mysql-db mysql -u laravel -psecret -e "CREATE DATABASE IF NOT EXISTS laravel_testing;"
+
+# Verificar conexão com o banco de testes
+echo "Aguardando conexão com o banco de testes..."
+until php -r "new PDO('mysql:host=db;port=3306;dbname=laravel_testing', 'laravel', 'secret');" 2>/dev/null; do
+    echo "Aguardando o banco de testes ficar pronto..."
+    sleep 3
+done
+
+echo "Banco de testes conectado com sucesso."
 
 # Instalar dependências do Composer
 if [ -f composer.json ]; then
@@ -66,28 +77,44 @@ else
     echo "Arquivo composer.json não encontrado. Ignorando instalação do Composer."
 fi
 
-# Configurar Laravel Passport (sem recriar tabelas existentes)
+# Gerar chave da aplicação para o ambiente principal
 if [ -f artisan ]; then
-    echo "Configurando Laravel Passport..."
-
-    # Executar migrações gerais
-    php artisan migrate --force
-
-    # Gerar chaves do Passport
-    php artisan passport:keys --force
-    php artisan passport:client --personal --name="Personal Access Client"
-
-else
-    echo "Arquivo artisan não encontrado. Ignorando configuração do Passport."
-fi
-
-# Gerar chave da aplicação
-if [ -f artisan ]; then
-    echo "Gerando chave da aplicação..."
+    echo "Gerando chave da aplicação para o ambiente principal..."
     php artisan key:generate
 else
     echo "Arquivo artisan não encontrado. Ignorando geração de chave."
 fi
+
+# Executar migrações no banco principal
+echo "Executando migrações no banco principal..."
+php artisan migrate --force
+
+# Configurar Laravel Passport no banco principal
+if [ -f artisan ]; then
+    echo "Configurando Laravel Passport no banco principal..."
+    php artisan passport:keys --force
+    php artisan passport:client --personal --name="Personal Access Client"
+fi
+
+echo "Verificando conexão com o banco de testes..."
+until php -r "new PDO('mysql:host=db;port=3306;dbname=laravel_testing', 'laravel', 'secret');" 2>/dev/null; do
+    echo "Banco de testes ainda não está disponível, tentando novamente..."
+    sleep 3
+done
+
+echo "Banco de testes conectado com sucesso."
+
+# Configurar o banco de testes
+echo "Configurando o banco de dados de testes..."
+php artisan key:generate --env=testing
+
+# Executar migrações no banco de testes, ignorando tabelas do Passport
+echo "Executando migrações no banco de testes (sem tabelas do Passport)..."
+php artisan migrate --env=testing --force
+
+# Seeders no banco de testes
+echo "Executando seeders no banco de testes..."
+php artisan db:seed --env=testing --force
 
 # Iniciar o Vite (Frontend)
 if [ -f package.json ]; then

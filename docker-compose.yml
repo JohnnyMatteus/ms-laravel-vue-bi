@@ -25,6 +25,8 @@ services:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
       MYSQL_PASSWORD: secret
+    volumes:
+        - ./docker/app/db-init:/docker-entrypoint-initdb.d
     networks:
       - app-network
 

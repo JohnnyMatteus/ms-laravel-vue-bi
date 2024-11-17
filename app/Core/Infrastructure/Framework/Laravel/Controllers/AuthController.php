@@ -18,6 +18,7 @@ class AuthController
         LoginUseCase $loginUseCase
     ) {
         $this->registerUseCase = $registerUseCase;
+        $this->loginUseCase = $loginUseCase;
     }
 
     public function register(RegisterRequest $request): JsonResponse
@@ -31,14 +32,12 @@ class AuthController
 
     public function login(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        $dto = new LoginRequestDTO($data);
-        $token = $this->loginUseCase->execute($dto);
-
-        return response()->json(['token' => $token]);
+        try {
+            $dto = new LoginRequestDTO($request->all());
+            $token = $this->loginUseCase->execute($dto);
+            return response()->json(['token' => $token], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
+        }
     }
 }
