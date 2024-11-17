@@ -2,19 +2,6 @@
 
 echo "Iniciando o setup do Laravel..."
 
-# Verificar se o Laravel já está instalado
-if [ ! -f artisan ]; then
-    echo "Laravel não encontrado. Baixando o framework..."
-    mkdir /tmp/laravel-install
-    composer create-project --prefer-dist laravel/laravel /tmp/laravel-install
-
-    echo "Movendo arquivos do Laravel para o diretório de trabalho..."
-    mv /tmp/laravel-install/* /var/www/html/
-    mv /tmp/laravel-install/.* /var/www/html/ 2>/dev/null || true
-    rm -rf /tmp/laravel-install
-    echo "Laravel instalado com sucesso!"
-fi
-
 # Configurar o arquivo .env
 echo "Configurando o arquivo .env..."
 if [ ! -f .env ]; then
@@ -31,21 +18,6 @@ APP_DEBUG=true
 APP_TIMEZONE=UTC
 APP_URL=http://localhost
 
-APP_LOCALE=en
-APP_FALLBACK_LOCALE=en
-APP_FAKER_LOCALE=en_US
-
-APP_MAINTENANCE_DRIVER=file
-
-PHP_CLI_SERVER_WORKERS=4
-
-BCRYPT_ROUNDS=12
-
-LOG_CHANNEL=stack
-LOG_STACK=single
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=debug
-
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
@@ -56,35 +28,14 @@ DB_PASSWORD=secret
 CACHE_DRIVER=redis
 QUEUE_CONNECTION=redis
 SESSION_DRIVER=redis
-
 REDIS_HOST=redis
-REDIS_PASSWORD=null
 REDIS_PORT=6379
-
 SESSION_LIFETIME=120
-SESSION_ENCRYPT=false
-SESSION_PATH=/
-SESSION_DOMAIN=null
-
-BROADCAST_CONNECTION=log
 FILESYSTEM_DISK=local
 
 MAIL_MAILER=log
-MAIL_HOST=127.0.0.1
-MAIL_PORT=2525
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="\${APP_NAME}"
-
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=
-AWS_USE_PATH_STYLE_ENDPOINT=false
-
-VITE_APP_NAME="\${APP_NAME}"
 EOL
     fi
 fi
@@ -95,11 +46,17 @@ sed -i 's/DB_HOST=.*/DB_HOST=db/' .env
 sed -i 's/DB_DATABASE=.*/DB_DATABASE=laravel/' .env
 sed -i 's/DB_USERNAME=.*/DB_USERNAME=laravel/' .env
 sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=secret/' .env
-sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=redis/' .env
-sed -i 's/QUEUE_CONNECTION=.*/QUEUE_CONNECTION=redis/' .env
-sed -i 's/SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env
 
 echo "Configuração do .env concluída."
+
+# Verificar se o banco de dados está pronto
+echo "Aguardando conexão com o banco de dados..."
+until php -r "new PDO('mysql:host=db;port=3306;dbname=laravel', 'laravel', 'secret');" 2>/dev/null; do
+    echo "Aguardando o banco de dados ficar pronto..."
+    sleep 3
+done
+
+echo "Banco de dados conectado com sucesso."
 
 # Instalar dependências do Composer
 if [ -f composer.json ]; then
@@ -107,6 +64,21 @@ if [ -f composer.json ]; then
     composer install --no-interaction --prefer-dist
 else
     echo "Arquivo composer.json não encontrado. Ignorando instalação do Composer."
+fi
+
+# Configurar Laravel Passport (sem recriar tabelas existentes)
+if [ -f artisan ]; then
+    echo "Configurando Laravel Passport..."
+
+    # Executar migrações gerais
+    php artisan migrate --force
+
+    # Gerar chaves do Passport
+    php artisan passport:keys --force
+    php artisan passport:client --personal --name="Personal Access Client"
+
+else
+    echo "Arquivo artisan não encontrado. Ignorando configuração do Passport."
 fi
 
 # Gerar chave da aplicação
@@ -117,24 +89,10 @@ else
     echo "Arquivo artisan não encontrado. Ignorando geração de chave."
 fi
 
-# Executar migrations
-if [ -f artisan ]; then
-    echo "Executando migrations..."
-    php artisan migrate --force
-else
-    echo "Arquivo artisan não encontrado. Ignorando migrations."
-fi
-
-# Verificar Redis
-echo "Testando conexão com o Redis..."
-if php -r "new Redis();" 2>/dev/null; then
-    echo "Redis configurado e funcionando!"
-else
-    echo "Erro: Redis não configurado corretamente."
-fi
-
 # Iniciar o Vite (Frontend)
 if [ -f package.json ]; then
+    echo "Instalando dependências do NPM..."
+    npm install --legacy-peer-deps
     echo "Iniciando o Vite na porta 5173..."
     npm run dev &
 else
