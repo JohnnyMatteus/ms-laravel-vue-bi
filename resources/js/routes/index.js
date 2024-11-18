@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import DashboardView from "../views/DashboardView.vue";
-import DetailsView from "../views/DetailsView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import UserRequestsView from "../views/UserRequestsView.vue"
 
 const routes = [
     {
@@ -29,6 +29,13 @@ const routes = [
         name: "details",
         component: () => import("../views/DetailsView.vue"),
         props: true,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: "/user-requests",
+        name: "user-requests",
+        component: UserRequestsView,
+        meta: { requiresAuth: true },
     },
     {
         path: "/",

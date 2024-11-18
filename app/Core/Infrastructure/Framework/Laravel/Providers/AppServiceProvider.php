@@ -8,6 +8,7 @@ use App\Core\Domain\Repositories\PatrimonyEvolutionRepositoryInterface;
 use App\Core\Domain\Repositories\RegionGrowthRepositoryInterface;
 use App\Core\Domain\Repositories\SectorReturnRepositoryInterface;
 use App\Core\Domain\Repositories\UserRepositoryInterface;
+use App\Core\Domain\Repositories\UserRequestRepositoryInterface;
 use App\Core\Domain\Services\AuthServiceInterface;
 use App\Core\Domain\Services\DashboardServiceInterface;
 use App\Core\Domain\Services\UserRequestServiceInterface;
@@ -19,6 +20,7 @@ use App\Core\Infrastructure\Repositories\PatrimonyEvolutionRepository;
 use App\Core\Infrastructure\Repositories\RegionGrowthRepository;
 use App\Core\Infrastructure\Repositories\SectorReturnRepository;
 use App\Core\Infrastructure\Repositories\UserRepository;
+use App\Core\Infrastructure\Repositories\UserRequestRepository;
 use App\Core\Infrastructure\Services\AuthService;
 use App\Core\Infrastructure\Services\DashboardService;
 use App\Core\Infrastructure\Services\UserRequestService;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RegionGrowthRepositoryInterface::class, RegionGrowthRepository::class);
         $this->app->bind(DashboardServiceInterface::class, DashboardService::class);
         $this->app->bind(UserRequestServiceInterface::class, UserRequestService::class);
+        $this->app->bind(UserRequestRepositoryInterface::class, UserRequestRepository::class);
     }
 
     /**

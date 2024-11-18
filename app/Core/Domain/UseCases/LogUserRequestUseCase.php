@@ -2,19 +2,21 @@
 
 namespace App\Core\Domain\UseCases;
 
-use App\Core\Domain\Services\UserRequestServiceInterface;
+use App\Core\Domain\Repositories\UserRequestRepositoryInterface;
 
 class LogUserRequestUseCase
 {
-    private UserRequestServiceInterface $service;
+    private UserRequestRepositoryInterface $userRequestRepository;
 
-    public function __construct(UserRequestServiceInterface $service)
+    public function __construct(UserRequestRepositoryInterface $userRequestRepository)
     {
-        $this->service = $service;
+        $this->userRequestRepository = $userRequestRepository;
     }
 
-    public function execute(string $userId, string $endpoint): void
+    public function execute(array $data): void
     {
-        $this->service->logRequest($userId, $endpoint);
+        $this->userRequestRepository->logRequest($data);
     }
 }
+
+

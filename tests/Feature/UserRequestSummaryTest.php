@@ -9,24 +9,44 @@ use Laravel\Passport\Passport;
 
 class UserRequestSummaryTest extends TestCase
 {
-    public function test_user_requests_summary_is_returned()
+    public function test_user_requests_summary_is_returned_correctly_for_authenticated_user()
     {
-        // Criar usuário e autenticar com Passport
-        $user = User::factory()->create();
-        Passport::actingAs($user);
+        // Criar dois usuários
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
 
-        // Criar registros de requisições simuladas
-        UserRequest::create(['user_id' => $user->id, 'endpoint' => 'api/dashboard', 'count' => 10]);
-        UserRequest::create(['user_id' => $user->id, 'endpoint' => 'api/details', 'count' => 5]);
+        // Criar registros de UserRequest para os usuários
+        UserRequest::create(['user_id' => $user1->id, 'endpoint' => 'api/dashboard', 'count' => 5]);
+        UserRequest::create(['user_id' => $user1->id, 'endpoint' => 'api/user-requests', 'count' => 4]);
+        UserRequest::create(['user_id' => $user2->id, 'endpoint' => 'api/details', 'count' => 2]);
 
-        // Fazer requisição ao endpoint de resumo
+        // Autenticar o usuário 1
+        Passport::actingAs($user1);
+
+        // Fazer a requisição para o endpoint protegido
         $response = $this->getJson('/api/user-requests');
 
-        // Validar a resposta
+        // Validar os dados do usuário autenticado
         $response->assertStatus(200)
-            ->assertJson([
-                ['endpoint' => 'api/dashboard', 'total_count' => 10],
-                ['endpoint' => 'api/details', 'total_count' => 5],
+            ->assertJsonFragment([
+                'user' => [
+                    'id' => $user1->id,
+                    'name' => $user1->name,
+                    'email' => $user1->email,
+                ],
+            ])
+            ->assertJsonFragment([
+                'endpoint' => 'api/dashboard',
+                'total_count' => 5,
             ]);
+    }
+
+    public function test_user_requests_summary_requires_authentication()
+    {
+        // Fazer a requisição sem autenticação
+        $response = $this->getJson('/api/user-requests');
+
+        // Verificar se o status retornado é 401
+        $response->assertStatus(401);
     }
 }

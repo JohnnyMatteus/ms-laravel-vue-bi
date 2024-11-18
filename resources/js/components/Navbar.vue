@@ -1,7 +1,10 @@
 <template>
     <header class="bg-blue-500 text-white px-6 py-4 flex justify-between items-center">
         <h1 class="text-xl font-bold">Dashboard</h1>
-        <button @click="logout" class="bg-red-500 px-4 py-2 rounded">Logout</button>
+        <nav>
+            <router-link to="/user-requests" class="mr-4">User Requests</router-link>
+            <button @click="logout" class="bg-red-500 px-4 py-2 rounded">Logout</button>
+        </nav>
     </header>
 </template>
 

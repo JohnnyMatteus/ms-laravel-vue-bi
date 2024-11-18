@@ -2,23 +2,28 @@
 
 namespace App\Core\Infrastructure\Framework\Laravel\Middleware;
 
+use Closure;
 use App\Core\Domain\UseCases\LogUserRequestUseCase;
-use Illuminate\Support\Facades\Auth;
 
 class LogUserRequestMiddleware
 {
-    private LogUserRequestUseCase $logUseCase;
+    private LogUserRequestUseCase $logUserRequestUseCase;
 
-    public function __construct(LogUserRequestUseCase $logUseCase)
+    public function __construct(LogUserRequestUseCase $logUserRequestUseCase)
     {
-        $this->logUseCase = $logUseCase;
+        $this->logUserRequestUseCase = $logUserRequestUseCase;
     }
 
-    public function handle($request, \Closure $next)
+    public function handle($request, Closure $next)
     {
-        if (Auth::check()) {
-            $this->logUseCase->execute(Auth::id(), $request->path());
-        }
+        // Dados para registrar a requisição
+        $data = [
+            'user_id' => auth()->id(),
+            'endpoint' => $request->path(),
+        ];
+
+        // Executa o caso de uso
+        $this->logUserRequestUseCase->execute($data);
 
         return $next($request);
     }

@@ -10,4 +10,9 @@ class UserRequest extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'endpoint', 'count'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

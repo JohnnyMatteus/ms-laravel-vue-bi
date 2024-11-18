@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\UserRequest;
 use Tests\TestCase;
 use Laravel\Passport\Passport;
 

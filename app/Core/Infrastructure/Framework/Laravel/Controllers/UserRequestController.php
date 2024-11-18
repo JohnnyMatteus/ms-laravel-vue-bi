@@ -2,20 +2,22 @@
 
 namespace App\Core\Infrastructure\Framework\Laravel\Controllers;
 
-use App\Core\Domain\UseCases\GetUserRequestSummaryUseCase;
+use App\Core\Domain\Repositories\UserRequestRepositoryInterface;
+use Illuminate\Http\JsonResponse;
 
 class UserRequestController
 {
-    private GetUserRequestSummaryUseCase $summaryUseCase;
+    private UserRequestRepositoryInterface $userRequestRepository;
 
-    public function __construct(GetUserRequestSummaryUseCase $summaryUseCase)
+    public function __construct(UserRequestRepositoryInterface $userRequestRepository)
     {
-        $this->summaryUseCase = $summaryUseCase;
+        $this->userRequestRepository = $userRequestRepository;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
-        $summary = $this->summaryUseCase->execute();
+        $summary = $this->userRequestRepository->getUserRequestSummary();
+
         return response()->json($summary);
     }
 }
