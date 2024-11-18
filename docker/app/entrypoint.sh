@@ -17,7 +17,7 @@ APP_KEY=
 APP_DEBUG=true
 APP_TIMEZONE=UTC
 APP_URL=http://localhost
-
+VITE_API_BASE_URL=http://localhost:8000/api
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
@@ -88,6 +88,9 @@ fi
 # Executar migrações no banco principal
 echo "Executando migrações no banco principal..."
 php artisan migrate --force
+
+echo "Executando seeds no banco principal..."
+php artisan db:seed
 
 # Configurar Laravel Passport no banco principal
 if [ -f artisan ]; then

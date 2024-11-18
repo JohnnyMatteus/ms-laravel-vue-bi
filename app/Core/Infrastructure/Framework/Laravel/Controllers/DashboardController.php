@@ -16,6 +16,10 @@ class DashboardController
 
     public function index(Request $request)
     {
+        if (!auth('api')->check()) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         $filters = $request->only(['investment_type_id', 'date_range']);
         $data = $this->dashboardUseCase->getDashboardData($filters);
 

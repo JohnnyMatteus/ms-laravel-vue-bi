@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Core\Domain\Exceptions\BusinessRuleException;
+use Illuminate\Auth\AuthenticationException;
 use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -34,5 +35,8 @@ class Handler extends ExceptionHandler
 
         return parent::render($request, $exception);
     }
-
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
 }

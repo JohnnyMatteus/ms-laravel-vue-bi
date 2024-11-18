@@ -24,7 +24,12 @@ const routes = [
         component: DashboardView,
         meta: { requiresAuth: true },
     },
-    { path: "/details/:id", name: "details", component: DetailsView, meta: { requiresAuth: true } },
+    {
+        path: "/dashboard/details/:chartType",
+        name: "details",
+        component: () => import("../views/DetailsView.vue"),
+        props: true,
+    },
     {
         path: "/",
         redirect: "/login", // Redirecionar para login por padrão

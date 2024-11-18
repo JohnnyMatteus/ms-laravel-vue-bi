@@ -15,7 +15,7 @@ class PatrimonyEvolutionRepository implements PatrimonyEvolutionRepositoryInterf
                 $query->where('investment_type_id', $typeId);
             })
             ->when($filters['date_range'] ?? null, function ($query, $dateRange) {
-                $query->whereBetween('date', $dateRange);
+                $query->whereBetween('created_at', $dateRange); // Substitua pelo nome correto
             })
             ->selectRaw('month as period, SUM(value) as total_value')
             ->groupBy('month')

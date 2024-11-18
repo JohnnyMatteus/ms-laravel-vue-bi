@@ -1,26 +1,77 @@
 <template>
-    <div>
+    <div class="chart-container">
         <canvas ref="chartCanvas"></canvas>
     </div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { toRaw } from "vue";
 import Chart from "chart.js/auto";
 
 export default {
-    props: ["chartType", "chartData"],
-    setup(props) {
-        const chartCanvas = ref(null);
+    props: {
+        chartType: {
+            type: String,
+            required: true,
+        },
+        chartData: {
+            type: Object,
+            required: true,
+        },
+    },
+    data() {
+        return {
+            chartInstance: null,
+        };
+    },
+    methods: {
+        createChart() {
+            if (this.chartInstance) {
+                this.chartInstance.destroy(); // Destroi o gráfico antigo
+            }
 
-        onMounted(() => {
-            new Chart(chartCanvas.value, {
-                type: props.chartType,
-                data: props.chartData,
+            const ctx = this.$refs.chartCanvas.getContext("2d");
+            const rawData = toRaw(this.chartData); // Evita referências reativas
+
+            this.chartInstance = new Chart(ctx, {
+                type: this.chartType,
+                data: rawData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Evita distorções no tamanho
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: "top",
+                        },
+                    },
+                },
             });
-        });
-
-        return {chartCanvas};
+        },
+    },
+    mounted() {
+        this.createChart();
+    },
+    watch: {
+        chartData: {
+            deep: true,
+            handler() {
+                this.createChart();
+            },
+        },
+    },
+    beforeUnmount() {
+        if (this.chartInstance) {
+            this.chartInstance.destroy();
+        }
     },
 };
 </script>
+
+<style scoped>
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+</style>

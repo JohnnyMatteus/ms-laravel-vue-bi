@@ -17,6 +17,4 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     // Rota para obter os dados do dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-
-
 });

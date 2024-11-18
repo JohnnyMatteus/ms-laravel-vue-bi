@@ -6,11 +6,8 @@
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             <Sidebar @filter="applyFilters" />
+            <slot :applyFilters="applyFilters" />
 
-            <!-- Main Content -->
-            <main class="flex-1 overflow-y-auto p-6">
-                <slot />
-            </main>
         </div>
     </div>
 </template>
@@ -24,8 +21,7 @@ export default {
     components: {Navbar, Sidebar},
     methods: {
         applyFilters(filters) {
-            // Transmitir os filtros para os gráficos ou dados
-            this.$emit("filter", filters);
+            this.$emit("filter", filters); // Emite o evento para o componente pai
         },
     },
 };
